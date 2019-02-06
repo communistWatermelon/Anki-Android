@@ -31,7 +31,7 @@
             android:key="deckPath"
             android:summary="@string/preference_summary_literal"
             android:title="@string/col_path" />
-        <com.ichi2.ui.ConfirmationPreference
+        <com.melonheadstudios.ui.ConfirmationPreference
             android:key="force_full_sync"
             android:title="@string/force_full_sync_title"
             android:summary="@string/force_full_sync_summary" />
@@ -39,7 +39,7 @@
             android:key="custom_sync_server_link"
             android:title="@string/custom_sync_server_title"/>
         <PreferenceCategory android:title="@string/pref_cat_performance" >
-            <com.ichi2.ui.SeekBarPreference
+            <com.melonheadstudios.ui.SeekBarPreference
                 android:defaultValue="8"
                 android:key="backupMax"
                 android:max="10"
@@ -97,7 +97,7 @@
                 android:key="dictionary"
                 android:summary="@string/preference_summary_literal"
                 android:title="@string/dictionary" />
-            <com.ichi2.preferences.CustomDialogPreference
+            <com.melonheadstudios.preferences.CustomDialogPreference
                 android:dialogIcon="@drawable/ic_dialog_alert"
                 android:dialogMessage="@string/reset_languages_question"
                 android:dialogTitle="@string/reset_languages"
