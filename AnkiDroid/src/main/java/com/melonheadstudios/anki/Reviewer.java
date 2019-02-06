@@ -174,7 +174,7 @@ public class Reviewer extends AbstractFlashcardViewer {
         col.getSched().reset();     // Reset schedule incase card had previous been loaded
         DeckTask.launchDeckTask(DeckTask.TASK_TYPE_ANSWER_CARD, mAnswerCardHandler,
                 new DeckTask.TaskData(null, 0));
-        
+
         // Add a weak reference to current activity so that scheduler can talk to to Activity
         mSched.setContext(new WeakReference<Activity>(this));
 
