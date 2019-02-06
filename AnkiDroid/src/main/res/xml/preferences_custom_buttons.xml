@@ -96,18 +96,4 @@ MENU_DISABLED = 3
             android:key="customButtonDelete"
             android:title="@string/menu_delete_note" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_cat_whiteboard" >
-        <ListPreference
-            android:defaultValue="2"
-            android:entries="@array/custom_button_labels"
-            android:entryValues="@array/custom_button_values"
-            android:key="customButtonShowHideWhiteboard"
-            android:title="@string/hide_whiteboard" />
-        <ListPreference
-            android:defaultValue="1"
-            android:entries="@array/custom_button_labels"
-            android:entryValues="@array/custom_button_values"
-            android:key="customButtonClearWhiteboard"
-            android:title="@string/clear_whiteboard" />
-    </PreferenceCategory>
 </PreferenceScreen>

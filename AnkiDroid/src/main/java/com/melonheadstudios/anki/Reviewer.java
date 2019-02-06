@@ -57,8 +57,6 @@ import timber.log.Timber;
 
 public class Reviewer extends AbstractFlashcardViewer {
     private boolean mHasDrawerSwipeConflicts = false;
-    private boolean mShowWhiteboard = true;
-    private boolean mBlackWhiteboard = true;
     private boolean mPrefFullscreenReview = false;
     private static final int ADD_NOTE = 12;
 
@@ -173,12 +171,6 @@ public class Reviewer extends AbstractFlashcardViewer {
         // task to load a card, but since we send null
         // as the card to answer, no card will be answered.
 
-        mPrefWhiteboard = MetaDB.getWhiteboardState(this, getParentDid());
-        if (mPrefWhiteboard) {
-            setWhiteboardEnabledState(true);
-            setWhiteboardVisibility(true);
-        }
-
         col.getSched().reset();     // Reset schedule incase card had previous been loaded
         DeckTask.launchDeckTask(DeckTask.TASK_TYPE_ANSWER_CARD, mAnswerCardHandler,
                 new DeckTask.TaskData(null, 0));
@@ -208,11 +200,7 @@ public class Reviewer extends AbstractFlashcardViewer {
 
             case R.id.action_undo:
                 Timber.i("Reviewer:: Undo button pressed");
-                if (mShowWhiteboard && mWhiteboard != null && mWhiteboard.undoSize() > 0) {
-                    mWhiteboard.undo();
-                } else {
-                    undo();
-                }
+                undo();
                 break;
 
             case R.id.action_reset_card_progress:
@@ -253,29 +241,6 @@ public class Reviewer extends AbstractFlashcardViewer {
             case R.id.action_delete:
                 Timber.i("Reviewer:: Delete note button pressed");
                 showDeleteNoteDialog();
-                break;
-
-            case R.id.action_clear_whiteboard:
-                Timber.i("Reviewer:: Clear whiteboard button pressed");
-                if (mWhiteboard != null) {
-                    mWhiteboard.clear();
-                }
-                break;
-
-            case R.id.action_hide_whiteboard:
-                // toggle whiteboard visibility
-                Timber.i("Reviewer:: Whiteboard visibility set to %b", !mShowWhiteboard);
-                setWhiteboardVisibility(!mShowWhiteboard);
-                refreshActionBar();
-                break;
-
-            case R.id.action_enable_whiteboard:
-                // toggle whiteboard enabled state (and show/hide whiteboard item in action bar)
-                mPrefWhiteboard = ! mPrefWhiteboard;
-                Timber.i("Reviewer:: Whiteboard enabled state set to %b", mPrefWhiteboard);
-                setWhiteboardEnabledState(mPrefWhiteboard);
-                setWhiteboardVisibility(mPrefWhiteboard);
-                refreshActionBar();
                 break;
 
             case R.id.action_search_dictionary:
@@ -395,41 +360,12 @@ public class Reviewer extends AbstractFlashcardViewer {
             menu.findItem(R.id.action_mark_card).setTitle(R.string.menu_mark_note).setIcon(R.drawable.ic_star_outline_white_24dp);
         }
 
-        if (mShowWhiteboard && mWhiteboard != null && mWhiteboard.undoSize() > 0) {
-            // Whiteboard undo queue non-empty. Switch the undo icon to a whiteboard specific one.
-            menu.findItem(R.id.action_undo).setIcon(R.drawable.ic_eraser_variant_white_24dp);
-            menu.findItem(R.id.action_undo).setEnabled(true).getIcon().setAlpha(Themes.ALPHA_ICON_ENABLED_LIGHT);
-        } else if (mShowWhiteboard && mWhiteboard != null && mWhiteboard.isUndoModeActive()) {
-            // Whiteboard undo queue empty, but user has added strokes to it for current card. Disable undo button.
-            menu.findItem(R.id.action_undo).setIcon(R.drawable.ic_eraser_variant_white_24dp);
-            menu.findItem(R.id.action_undo).setEnabled(false).getIcon().setAlpha(Themes.ALPHA_ICON_DISABLED_LIGHT);
-        } else if (colIsOpen() && getCol().undoAvailable()) {
+       if (colIsOpen() && getCol().undoAvailable()) {
             menu.findItem(R.id.action_undo).setIcon(R.drawable.ic_undo_white_24dp);
             menu.findItem(R.id.action_undo).setEnabled(true).getIcon().setAlpha(Themes.ALPHA_ICON_ENABLED_LIGHT);
         } else {
             menu.findItem(R.id.action_undo).setIcon(R.drawable.ic_undo_white_24dp);
             menu.findItem(R.id.action_undo).setEnabled(false).getIcon().setAlpha(Themes.ALPHA_ICON_DISABLED_LIGHT);
-        }
-        if (mPrefWhiteboard) {
-            // Configure the whiteboard related items in the action bar
-            menu.findItem(R.id.action_enable_whiteboard).setTitle(R.string.disable_whiteboard);
-            if(mCustomButtons.get(R.id.action_hide_whiteboard) != MENU_DISABLED)
-                menu.findItem(R.id.action_hide_whiteboard).setVisible(true);
-            if(mCustomButtons.get(R.id.action_clear_whiteboard) != MENU_DISABLED)
-                menu.findItem(R.id.action_clear_whiteboard).setVisible(true);
-
-            Drawable whiteboardIcon = ContextCompat.getDrawable(this, R.drawable.ic_gesture_white_24dp);
-            if (mShowWhiteboard) {
-                whiteboardIcon.setAlpha(255);
-                menu.findItem(R.id.action_hide_whiteboard).setIcon(whiteboardIcon);
-                menu.findItem(R.id.action_hide_whiteboard).setTitle(R.string.hide_whiteboard);
-            } else {
-                whiteboardIcon.setAlpha(77);
-                menu.findItem(R.id.action_hide_whiteboard).setIcon(whiteboardIcon);
-                menu.findItem(R.id.action_hide_whiteboard).setTitle(R.string.show_whiteboard);
-            }
-        } else {
-            menu.findItem(R.id.action_enable_whiteboard).setTitle(R.string.enable_whiteboard);
         }
         if (colIsOpen() && getCol().getDecks().isDyn(getParentDid())) {
             menu.findItem(R.id.action_open_deck_options).setVisible(false);
@@ -535,17 +471,8 @@ public class Reviewer extends AbstractFlashcardViewer {
     protected SharedPreferences restorePreferences() {
         super.restorePreferences();
         SharedPreferences preferences = AnkiDroidApp.getSharedPrefs(getBaseContext());
-        mBlackWhiteboard = preferences.getBoolean("blackWhiteboard", true);
         mPrefFullscreenReview = Integer.parseInt(preferences.getString("fullscreenMode", "0")) > 0;
         return preferences;
-    }
-
-    @Override
-    public void fillFlashcard() {
-        super.fillFlashcard();
-        if (!sDisplayAnswer && mShowWhiteboard && mWhiteboard != null) {
-            mWhiteboard.clear();
-        }
     }
 
 
@@ -565,60 +492,6 @@ public class Reviewer extends AbstractFlashcardViewer {
         }
         UIUtils.saveCollectionInBackground(this);
     }
-
-
-    @Override
-    protected void initControls() {
-        super.initControls();
-        if (mPrefWhiteboard) {
-            setWhiteboardVisibility(mShowWhiteboard);
-        }
-    }
-
-
-    private void setWhiteboardEnabledState(boolean state) {
-        mPrefWhiteboard = state;
-        MetaDB.storeWhiteboardState(this, getParentDid(), state);
-        if (state && mWhiteboard == null) {
-            createWhiteboard();
-        }
-    }
-
-    // Create the whiteboard
-    private void createWhiteboard() {
-        mWhiteboard = new Whiteboard(this, mNightMode, mBlackWhiteboard);
-        FrameLayout.LayoutParams lp2 = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        mWhiteboard.setLayoutParams(lp2);
-        FrameLayout fl = findViewById(R.id.whiteboard);
-        fl.addView(mWhiteboard);
-
-        mWhiteboard.setOnTouchListener((v, event) -> {
-            if (!mShowWhiteboard || (mPrefFullscreenReview
-                    && CompatHelper.getCompat().isImmersiveSystemUiVisible(Reviewer.this))) {
-                // Bypass whiteboard listener when it's hidden or fullscreen immersive mode is temporarily suspended
-                v.performClick();
-                return getGestureDetector().onTouchEvent(event);
-            }
-            return mWhiteboard.handleTouchEvent(event);
-        });
-        mWhiteboard.setEnabled(true);
-    }
-
-    // Show or hide the whiteboard
-    private void setWhiteboardVisibility(boolean state) {
-        mShowWhiteboard = state;
-        if (state) {
-            mWhiteboard.setVisibility(View.VISIBLE);
-            disableDrawerSwipe();
-        } else {
-            mWhiteboard.setVisibility(View.GONE);
-            if (!mHasDrawerSwipeConflicts) {
-                enableDrawerSwipe();
-            }
-        }
-    }
-
 
     private void disableDrawerSwipeOnConflicts() {
         SharedPreferences preferences = AnkiDroidApp.getSharedPrefs(getBaseContext());

@@ -1,18 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ankidroid="http://schemas.android.com/apk/res-auto" >
-
-    <item
-        android:id="@+id/action_clear_whiteboard"
-        android:title="@string/clear_whiteboard"
-        android:icon="@drawable/ic_clear_white_24dp"
-        android:visible="false"
-        ankidroid:showAsAction="always"/>
-    <item
-        android:id="@+id/action_hide_whiteboard"
-        android:title="@string/hide_whiteboard"
-        android:icon="@drawable/ic_gesture_white_24dp"
-        android:visible="false"
-        ankidroid:showAsAction="always"/>
     <item
         android:id="@+id/action_undo"
         android:enabled="false"
@@ -55,10 +42,6 @@
         android:id="@+id/action_search_dictionary"
         android:title="@string/menu_select"
         android:visible="false"/>
-    <item
-        android:id="@+id/action_enable_whiteboard"
-        android:title="@string/enable_whiteboard"
-        android:icon="@drawable/ic_gesture_white_24dp" />
     <item
         android:id="@+id/action_open_deck_options"
         android:title="@string/study_options" />

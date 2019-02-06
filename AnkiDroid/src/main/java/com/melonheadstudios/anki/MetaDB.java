@@ -75,14 +75,11 @@ public class MetaDB {
         if (mMetaDb.getVersion() < 4) {
             mMetaDb.execSQL("DROP TABLE IF EXISTS languages;");
             mMetaDb.execSQL("DROP TABLE IF EXISTS customDictionary;");
-            mMetaDb.execSQL("DROP TABLE IF EXISTS whiteboardState;");
         }
 
         // Create tables if not exist
         mMetaDb.execSQL("CREATE TABLE IF NOT EXISTS languages (" + " _id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + "did INTEGER NOT NULL, ord INTEGER, " + "qa INTEGER, " + "language TEXT)");
-        mMetaDb.execSQL("CREATE TABLE IF NOT EXISTS whiteboardState (" + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + "did INTEGER NOT NULL, " + "state INTEGER)");
         mMetaDb.execSQL("CREATE TABLE IF NOT EXISTS customDictionary (" + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + "did INTEGER NOT NULL, " + "dictionary INTEGER)");
         mMetaDb.execSQL("CREATE TABLE IF NOT EXISTS smallWidgetStatus (" + "id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -137,8 +134,6 @@ public class MetaDB {
         try {
             mMetaDb.execSQL("DROP TABLE IF EXISTS languages;");
             Timber.i("MetaDB:: Resetting all language assignment");
-            mMetaDb.execSQL("DROP TABLE IF EXISTS whiteboardState;");
-            Timber.i("MetaDB:: Resetting whiteboard state");
             mMetaDb.execSQL("DROP TABLE IF EXISTS customDictionary;");
             Timber.i("MetaDB:: Resetting custom Dictionary");
             mMetaDb.execSQL("DROP TABLE IF EXISTS widgetStatus;");
@@ -274,63 +269,6 @@ public class MetaDB {
         }
         return false;
     }
-
-
-    /**
-     * Returns the state of the whiteboard for the given deck.
-     * 
-     * @return 1 if the whiteboard should be shown, 0 otherwise
-     */
-    public static boolean getWhiteboardState(Context context, long did) {
-        openDBIfClosed(context);
-        Cursor cur = null;
-        try {
-            cur = mMetaDb.rawQuery("SELECT state FROM whiteboardState" + " WHERE did = " + did, null);
-            if (cur.moveToNext()) {
-                return cur.getInt(0) > 0;
-            } else {
-                return false;
-            }
-        } catch (Exception e) {
-            Timber.e(e, "Error retrieving whiteboard state from MetaDB ");
-            return false;
-        } finally {
-            if (cur != null && !cur.isClosed()) {
-                cur.close();
-            }
-        }
-    }
-
-
-    /**
-     * Stores the state of the whiteboard for a given deck.
-     *
-     * @param did deck id to store whiteboard state for
-     * @param whiteboardState 1 if the whiteboard should be shown, 0 otherwise
-     */
-    public static void storeWhiteboardState(Context context, long did, boolean whiteboardState) {
-        int state = (whiteboardState) ? 1 : 0;
-        openDBIfClosed(context);
-        Cursor cur = null;
-        try {
-            cur = mMetaDb.rawQuery("SELECT _id FROM whiteboardState" + " WHERE did  = " + did, null);
-            if (cur.moveToNext()) {
-                mMetaDb.execSQL("UPDATE whiteboardState " + "SET did = " + did + ", " + "state="
-                        + Integer.toString(state) + " " + "WHERE _id=" + cur.getString(0) + ";");
-                Timber.d("Store whiteboard state (%d) for deck %d", state, did);
-            } else {
-                mMetaDb.execSQL("INSERT INTO whiteboardState (did, state) VALUES (?, ?)", new Object[] { did, state });
-                Timber.d("Store whiteboard state (%d) for deck %d", state, did);
-            }
-        } catch (Exception e) {
-            Timber.e(e,"Error storing whiteboard state in MetaDB ");
-        } finally {
-            if (cur != null && !cur.isClosed()) {
-                cur.close();
-            }
-        }
-    }
-
 
     /**
      * Returns a custom dictionary associated to a deck

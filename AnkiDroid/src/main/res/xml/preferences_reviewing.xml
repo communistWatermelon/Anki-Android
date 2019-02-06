@@ -122,20 +122,6 @@
             android:summary="@string/show_eta_summ"
             android:title="@string/show_eta" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_cat_whiteboard" >
-        <com.melonheadstudios.ui.SeekBarPreference
-            android:defaultValue="6"
-            android:key="whiteBoardStrokeWidth"
-            android:max="30"
-            android:summary="@string/preference_summary_literal"
-            android:text=""
-            android:title="@string/whiteboard_stroke_width" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="blackWhiteboard"
-            android:summary="@string/whiteboard_black_summ"
-            android:title="@string/whiteboard_black" />
-    </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_cat_automatic_display" >
         <CheckBoxPreference
             android:defaultValue="false"

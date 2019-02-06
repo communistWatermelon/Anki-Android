@@ -243,8 +243,6 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
                     edit.remove("customButtonBury");
                     edit.remove("customButtonSuspend");
                     edit.remove("customButtonDelete");
-                    edit.remove("customButtonClearWhiteboard");
-                    edit.remove("customButtonShowHideWhiteboard");
                     edit.apply();
                     //finish();
                     //TODO: Should reload the preferences screen on completion

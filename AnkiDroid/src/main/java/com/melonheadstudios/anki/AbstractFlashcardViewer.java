@@ -175,7 +175,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
     private boolean mPrefHideDueCount;
     private boolean mPrefShowETA;
     private boolean mShowTimer;
-    protected boolean mPrefWhiteboard;
     private int mPrefFullscreenReview;
     private int mCardZoom;
     private int mImageZoom;
@@ -237,7 +236,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
     protected LinearLayout mEase4Layout;
     protected RelativeLayout mTopBarLayout;
     private Chronometer mCardTimer;
-    protected Whiteboard mWhiteboard;
     @SuppressWarnings("deprecation") // Tracked separately as #5023 on github
     private android.text.ClipboardManager mClipboard;
 
@@ -468,9 +466,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
                 mNoMoreCards = true;
                 showProgressBar();
                 return;
-            }
-            if (mPrefWhiteboard && mWhiteboard != null) {
-                mWhiteboard.clear();
             }
 
             if (sDisplayAnswer) {
@@ -1717,8 +1712,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
         mCustomButtons.put(R.id.action_edit, Integer.parseInt(preferences.getString("customButtonEditCard", Integer.toString(MenuItem.SHOW_AS_ACTION_IF_ROOM))));
         mCustomButtons.put(R.id.action_add_note_reviewer, Integer.parseInt(preferences.getString("customButtonAddCard", Integer.toString(MENU_DISABLED))));
         mCustomButtons.put(R.id.action_replay, Integer.parseInt(preferences.getString("customButtonReplay", Integer.toString(MenuItem.SHOW_AS_ACTION_IF_ROOM))));
-        mCustomButtons.put(R.id.action_clear_whiteboard, Integer.parseInt(preferences.getString("customButtonClearWhiteboard", Integer.toString(MenuItem.SHOW_AS_ACTION_IF_ROOM))));
-        mCustomButtons.put(R.id.action_hide_whiteboard, Integer.parseInt(preferences.getString("customButtonShowHideWhiteboard", Integer.toString(MenuItem.SHOW_AS_ACTION_ALWAYS))));
         mCustomButtons.put(R.id.action_select_tts, Integer.parseInt(preferences.getString("customButtonSelectTts", Integer.toString(MenuItem.SHOW_AS_ACTION_NEVER))));
         mCustomButtons.put(R.id.action_open_deck_options, Integer.parseInt(preferences.getString("customButtonDeckOptions", Integer.toString(MenuItem.SHOW_AS_ACTION_NEVER))));
         mCustomButtons.put(R.id.action_bury, Integer.parseInt(preferences.getString("customButtonBury", Integer.toString(MenuItem.SHOW_AS_ACTION_NEVER))));
@@ -1776,10 +1769,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
         // Clean answer field
         if (typeAnswer()) {
             mAnswerField.setText("");
-        }
-
-        if (mPrefWhiteboard && mWhiteboard != null) {
-            mWhiteboard.clear();
         }
     }
 
@@ -2410,10 +2399,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
                 break;
         }
 
-        if (mPrefWhiteboard && mWhiteboard != null) {
-            mWhiteboard.setEnabled(true);
-        }
-
         if (typeAnswer()) {
             mAnswerField.setEnabled(true);
         }
@@ -2463,10 +2448,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
                 mEase3Layout.setEnabled(false);
                 mEase4Layout.setEnabled(false);
                 break;
-        }
-
-        if (mPrefWhiteboard && mWhiteboard != null) {
-            mWhiteboard.setEnabled(false);
         }
 
         if (typeAnswer()) {
