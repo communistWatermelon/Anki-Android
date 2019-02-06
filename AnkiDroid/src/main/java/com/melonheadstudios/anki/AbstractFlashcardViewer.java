@@ -181,7 +181,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
     private int mRelativeButtonSize;
     private boolean mDoubleScrolling;
     private boolean mScrollingButtons;
-    private boolean mGesturesEnabled;
+
     // Android WebView
     protected boolean mSpeakText;
     protected boolean mDisableClipboard = false;
@@ -262,20 +262,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
     private boolean mIsYScrolling = false;
 
     /**
-     * Gesture Allocation
-     */
-    private int mGestureSwipeUp;
-    private int mGestureSwipeDown;
-    private int mGestureSwipeLeft;
-    private int mGestureSwipeRight;
-    private int mGestureDoubleTap;
-    private int mGestureTapLeft;
-    private int mGestureTapRight;
-    private int mGestureTapTop;
-    private int mGestureTapBottom;
-    private int mGestureLongclick;
-
-    /**
      * Custom button allocation
      */
     protected Map<Integer, Integer> mCustomButtons = new HashMap<>();
@@ -340,13 +326,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
                 UIUtils.showThemedToast(AbstractFlashcardViewer.this, lookupHint, false);
             }
             CompatHelper.getCompat().vibrate(AnkiDroidApp.getInstance().getApplicationContext(), 50);
-            longClickHandler.postDelayed(startLongClickAction, 300);
-        }
-    };
-    private final Runnable startLongClickAction = new Runnable() {
-        @Override
-        public void run() {
-            executeCommand(mGestureLongclick);
         }
     };
 
@@ -856,7 +835,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
         mTimeoutHandler.removeCallbacks(mShowAnswerTask);
         mTimeoutHandler.removeCallbacks(mShowQuestionTask);
         longClickHandler.removeCallbacks(longClickTestRunnable);
-        longClickHandler.removeCallbacks(startLongClickAction);
 
         pauseTimer();
         mSoundPlayer.stopSounds();
@@ -1691,20 +1669,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
         mScrollingButtons = preferences.getBoolean("scrolling_buttons", false);
         mDoubleScrolling = preferences.getBoolean("double_scrolling", false);
         mPrefCenterVertically = preferences.getBoolean("centerVertically", false);
-
-        mGesturesEnabled = AnkiDroidApp.initiateGestures(preferences);
-        if (mGesturesEnabled) {
-            mGestureSwipeUp = Integer.parseInt(preferences.getString("gestureSwipeUp", "9"));
-            mGestureSwipeDown = Integer.parseInt(preferences.getString("gestureSwipeDown", "0"));
-            mGestureSwipeLeft = Integer.parseInt(preferences.getString("gestureSwipeLeft", "8"));
-            mGestureSwipeRight = Integer.parseInt(preferences.getString("gestureSwipeRight", "17"));
-            mGestureDoubleTap = Integer.parseInt(preferences.getString("gestureDoubleTap", "7"));
-            mGestureTapLeft = Integer.parseInt(preferences.getString("gestureTapLeft", "3"));
-            mGestureTapRight = Integer.parseInt(preferences.getString("gestureTapRight", "6"));
-            mGestureTapTop = Integer.parseInt(preferences.getString("gestureTapTop", "12"));
-            mGestureTapBottom = Integer.parseInt(preferences.getString("gestureTapBottom", "2"));
-            mGestureLongclick = Integer.parseInt(preferences.getString("gestureLongclick", "11"));
-        }
 
         mCustomButtons.put(R.id.action_undo, Integer.parseInt(preferences.getString("customButtonUndo", Integer.toString(MenuItem.SHOW_AS_ACTION_ALWAYS))));
         mCustomButtons.put(R.id.action_schedule, Integer.parseInt(preferences.getString("customButtonScheduleCard", Integer.toString(MenuItem.SHOW_AS_ACTION_NEVER))));
@@ -2586,7 +2550,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
         mTimeoutHandler.removeCallbacks(mShowQuestionTask);
         mTimerHandler.removeCallbacks(removeChosenAnswerText);
         longClickHandler.removeCallbacks(longClickTestRunnable);
-        longClickHandler.removeCallbacks(startLongClickAction);
 
         AbstractFlashcardViewer.this.setResult(result);
 
@@ -2647,52 +2610,7 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
                     CompatHelper.getCompat().isImmersiveSystemUiVisible(AbstractFlashcardViewer.this)) {
                 delayedHide(INITIAL_HIDE_DELAY);
             }
-            if (mGesturesEnabled) {
-                try {
-                    float dy = e2.getY() - e1.getY();
-                    float dx = e2.getX() - e1.getX();
-
-                    if (Math.abs(dx) > Math.abs(dy)) {
-                        // horizontal swipe if moved further in x direction than y direction
-                        if (dx > AnkiDroidApp.sSwipeMinDistance
-                                && Math.abs(velocityX) > AnkiDroidApp.sSwipeThresholdVelocity
-                                && !mIsXScrolling && !mIsSelecting) {
-                            // right
-                            executeCommand(mGestureSwipeRight);
-                        } else if (dx < -AnkiDroidApp.sSwipeMinDistance
-                                && Math.abs(velocityX) > AnkiDroidApp.sSwipeThresholdVelocity
-                                && !mIsXScrolling && !mIsSelecting) {
-                            // left
-                            executeCommand(mGestureSwipeLeft);
-                        }
-                    } else {
-                        // otherwise vertical swipe
-                        if (dy > AnkiDroidApp.sSwipeMinDistance
-                                && Math.abs(velocityY) > AnkiDroidApp.sSwipeThresholdVelocity
-                                && !mIsYScrolling) {
-                            // down
-                            executeCommand(mGestureSwipeDown);
-                        } else if (dy < -AnkiDroidApp.sSwipeMinDistance
-                                && Math.abs(velocityY) > AnkiDroidApp.sSwipeThresholdVelocity
-                                && !mIsYScrolling) {
-                            // up
-                            executeCommand(mGestureSwipeUp);
-                        }
-                    }
-                } catch (Exception e) {
-                    Timber.e(e, "onFling Exception");
-                }
-            }
             return false;
-        }
-
-
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            if (mGesturesEnabled) {
-                executeCommand(mGestureDoubleTap);
-            }
-            return true;
         }
 
 
@@ -2713,25 +2631,6 @@ public abstract class AbstractFlashcardViewer extends NavigationDrawerActivity {
                     CompatHelper.getCompat().isImmersiveSystemUiVisible(AbstractFlashcardViewer.this)) {
                 delayedHide(INITIAL_HIDE_DELAY);
                 return true;
-            }
-            if (mGesturesEnabled && !mIsSelecting) {
-                int height = mTouchLayer.getHeight();
-                int width = mTouchLayer.getWidth();
-                float posX = e.getX();
-                float posY = e.getY();
-                if (posX > posY / height * width) {
-                    if (posY > height * (1 - posX / width)) {
-                        executeCommand(mGestureTapRight);
-                    } else {
-                        executeCommand(mGestureTapTop);
-                    }
-                } else {
-                    if (posY > height * (1 - posX / width)) {
-                        executeCommand(mGestureTapBottom);
-                    } else {
-                        executeCommand(mGestureTapLeft);
-                    }
-                }
             }
             mIsSelecting = false;
             showLookupButtonIfNeeded();

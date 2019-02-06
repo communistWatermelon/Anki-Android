@@ -34,8 +34,6 @@
     <string name="pref_cat_appearance_summ">Change themes and default font</string>
     <string name="pref_cat_themes">Themes</string>
     <string name="pref_cat_fonts">Fonts</string>
-    <string name="pref_cat_gestures">Gestures</string>
-    <string name="pref_cat_gestures_summ">Use taps and swipes instead of buttons</string>
     <string name="pref_cat_actions">Actions</string>
     <string name="pref_cat_advanced">Advanced</string>
     <string name="pref_cat_advanced_summ">Optimization and experimental features</string>
@@ -65,23 +63,11 @@
     <string name="full_screen_off">Off</string>
     <string name="full_screen_system">Hide the system bars</string>
     <string name="full_screen_complete">Hide the system bars and answer buttons</string>
-    <string name="full_screen_error_gestures">You must enable gestures to hide the answer buttons</string>
     <string name="answer_buttons_position">Answer buttons position</string>
     <string-array name="answer_buttons_position_labels">
         <item>Top</item>
         <item>Bottom</item>
     </string-array>
-    <string name="gestures">Enable gestures</string>
-    <string name="gestures_summ">Assign gestures to actions such as answering and editing cards.</string>
-    <string name="gestures_swipe_up">Swipe up</string>
-    <string name="gestures_swipe_down">Swipe down</string>
-    <string name="gestures_swipe_left">Swipe left</string>
-    <string name="gestures_swipe_right">Swipe right</string>
-    <string name="gestures_double_tap">Double touch</string>
-    <string name="gestures_tap_top">Touch top</string>
-    <string name="gestures_tap_bottom">Touch bottom</string>
-    <string name="gestures_tap_left">Touch left</string>
-    <string name="gestures_tap_right">Touch right</string>
     <string name="more_scrolling_buttons">eReader</string>
     <string name="more_scrolling_buttons_summ">Also use kanji/katakana, emoji/kao-moji buttons for scrolling</string>
     <string name="double_scrolling_gap">Double scrolling</string>

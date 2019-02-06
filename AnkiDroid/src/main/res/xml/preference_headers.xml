@@ -51,16 +51,6 @@
             android:value="com.melonheadstudios.anki.prefs.appearance" />
     </header>
 
-    <!-- Navigation Prefrences -->
-    <header
-        android:fragment="com.melonheadstudios.anki.Preferences$SettingsFragment"
-        android:summary="@string/pref_cat_gestures_summ"
-        android:title="@string/pref_cat_gestures">
-        <extra
-            android:name="subscreen"
-            android:value="com.melonheadstudios.anki.prefs.gestures" />
-    </header>
-
     <!-- Advanced Preferences -->
     <header
         android:fragment="com.melonheadstudios.anki.Preferences$SettingsFragment"

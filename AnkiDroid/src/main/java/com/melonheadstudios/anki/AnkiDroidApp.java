@@ -322,23 +322,6 @@ public class AnkiDroidApp extends Application {
     }
 
 
-    public static boolean initiateGestures(SharedPreferences preferences) {
-        Boolean enabled = preferences.getBoolean("gestures", false);
-        if (enabled) {
-            int sensitivity = preferences.getInt("swipeSensitivity", 100);
-            if (sensitivity != 100) {
-                float sens = 100.0f/sensitivity;
-                sSwipeMinDistance = (int) (DEFAULT_SWIPE_MIN_DISTANCE * sens + 0.5f);
-                sSwipeThresholdVelocity = (int) (DEFAULT_SWIPE_THRESHOLD_VELOCITY * sens  + 0.5f);
-            } else {
-                sSwipeMinDistance = DEFAULT_SWIPE_MIN_DISTANCE;
-                sSwipeThresholdVelocity = DEFAULT_SWIPE_THRESHOLD_VELOCITY;
-            }
-        }
-        return enabled;
-    }
-
-
     /**
      * Turns ACRA reporting off completely and persists it to shared prefs
      * But expands logcat search in case developer manually re-enables it

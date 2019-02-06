@@ -198,14 +198,7 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
                 ListPreference fullscreenPreference = (ListPreference)
                         screen.findPreference("fullscreenMode");
                 fullscreenPreference.setOnPreferenceChangeListener((preference, newValue) -> {
-                    SharedPreferences prefs = AnkiDroidApp.getSharedPrefs(Preferences.this);
-                    if (prefs.getBoolean("gestures", false) || !newValue.equals("2")) {
-                        return true;
-                    } else {
-                        Toast.makeText(getApplicationContext(),
-                                R.string.full_screen_error_gestures, Toast.LENGTH_LONG).show();
-                        return false;
-                    }
+                    return false;
                 });
                 // Custom buttons options
                 Preference customButtonsPreference = screen.findPreference("custom_buttons_link");
@@ -220,9 +213,6 @@ public class Preferences extends AppCompatPreferenceActivity implements Preferen
                 listener.addPreferencesFromResource(R.xml.preferences_appearance);
                 screen = listener.getPreferenceScreen();
                 initializeCustomFontsDialog(screen);
-                break;
-            case "com.ichi2.anki.prefs.gestures":
-                listener.addPreferencesFromResource(R.xml.preferences_gestures);
                 break;
             case "com.ichi2.anki.prefs.custom_buttons":
                 getSupportActionBar().setTitle(R.string.custom_buttons);
